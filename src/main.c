@@ -2,6 +2,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <stdio.h>
 
+#include "scheduler.h"
 #include "tick.h"
 #include "usart.h"
 
@@ -13,11 +14,13 @@
 void init(void);
 void clock_init(void);
 void led_init(void);
+void blink_task(void);
 
 void init(void) {
   clock_init();
   tick_init();
   usart_init();
+  scheduler_init();
   led_init();
 }
 
@@ -38,16 +41,26 @@ void led_init(void) {
   gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
 }
 
+static uint8_t led_on = 0;
+
+void blink_task(void) {
+  if (led_on) {
+    gpio_clear(LED_PORT, LED_PIN);
+  } else {
+    gpio_set(LED_PORT, LED_PIN);
+  }
+
+  led_on = !led_on;
+}
+
 int main(void) {
   init();
-
   printf("ready\r\n");
 
+  scheduler_every(250, &blink_task);
+
   while (1) {
-    gpio_set(LED_PORT, LED_PIN);
-    tick_delay(LED_BLINK_DELAY);
-    gpio_clear(LED_PORT, LED_PIN);
-    tick_delay(LED_BLINK_DELAY);
+    scheduler_run();
   }
 
   return 0;
