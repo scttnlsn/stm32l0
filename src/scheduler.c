@@ -18,8 +18,7 @@ typedef struct {
 
 static task_t tasks[MAX_TASKS];
 
-void noop() {
-}
+void noop(void);
 
 void scheduler_init(void) {
   for (int i = 0; i < MAX_TASKS; i++) {
@@ -78,4 +77,7 @@ void scheduler_run(void) {
       break;
     }
   }
+}
+
+void noop(void) {
 }
