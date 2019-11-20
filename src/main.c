@@ -7,9 +7,9 @@
 #include "tick.h"
 #include "usart.h"
 
-#define LED_RCC RCC_GPIOA
-#define LED_PORT GPIOA
-#define LED_PIN GPIO4
+#define LED_RCC RCC_GPIOB
+#define LED_PORT GPIOB
+#define LED_PIN GPIO3
 #define LED_BLINK_DELAY 250
 
 void init(void);
