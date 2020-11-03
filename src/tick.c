@@ -19,8 +19,7 @@ void tick_init(void) {
   systick_set_reload(15999);
   systick_clear();
 
-  systick_interrupt_enable();
-  systick_counter_enable();
+  tick_enable();
 }
 
 uint32_t tick_get(void) {
@@ -41,4 +40,14 @@ uint32_t tick_since(uint32_t since) {
 void tick_delay(uint32_t ticks) {
   uint32_t target = counter + ticks;
   while (counter < target);
+}
+
+void tick_enable(void) {
+  systick_interrupt_enable();
+  systick_counter_enable();
+}
+
+void tick_disable(void) {
+  systick_interrupt_disable();
+  systick_counter_disable();
 }
