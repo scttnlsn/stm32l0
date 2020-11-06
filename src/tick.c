@@ -1,4 +1,5 @@
 #include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/systick.h>
 
 #include "tick.h"
@@ -16,7 +17,7 @@ void tick_init(void) {
   systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
 
   // clock speed / 1000 - 1 = 1ms ticks
-  systick_set_reload(15999);
+  systick_set_reload(rcc_ahb_frequency / 1000 - 1);
   systick_clear();
 
   tick_enable();
