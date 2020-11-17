@@ -2,13 +2,16 @@
 #include <libopencm3/stm32/gpio.h>
 #include <stdio.h>
 
+#include "delay.h"
+#include "ds18b20.h"
 #include "led.h"
+#include "onewire.h"
+#include "power.h"
+#include "rfm69.h"
 #include "rtc.h"
+#include "spi.h"
 #include "tick.h"
 #include "usart.h"
-#include "power.h"
-#include "spi.h"
-#include "rfm69.h"
 
 #define NETWORK_ID 100
 #define GATEWAY_ADDR 1
@@ -27,12 +30,14 @@ static void init(void) {
   rcc_apb2_frequency = 16e6;
 
   tick_init();
+  delay_init();
   power_init();
   rtc_init();
   spi_init();
   led_init();
   rfm69_init(NETWORK_ID, NODE_ADDR);
   rfm69_set_key(ENCRYPTION_KEY);
+  onewire_init();
 }
 
 static void sleep(void) {
@@ -60,8 +65,8 @@ int main(void) {
   while (1) {
     led_on();
 
-    char buffer[] = { 1, 2, 3, 4 };
-    rfm69_send(GATEWAY_ADDR, buffer, 4);
+    float temp = ds18b20_read_temp();
+    rfm69_send(GATEWAY_ADDR, &temp, sizeof(float));
 
     tick_delay(100);
     led_off();
